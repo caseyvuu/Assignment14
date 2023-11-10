@@ -1,0 +1,148 @@
+/* Structure */
+body {
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    background-color: #7450BF;
+}
+
+h1 {
+    text-align: center;
+    border: 3px solid #4C2896;
+    background: #DAC8FF;
+    padding: 10px;
+}
+
+#car-details {
+    padding: 10px;
+    margin: 10px;
+    background: #DAC8FF;
+    border: 3px solid #4C2896;
+}
+
+#add-link {
+    font-size: 2em;
+    background-color: #DAC8FF;
+    border: 3px solid #4C2896;
+}
+
+#data-status {
+    background-color: #DAC8FF;
+    border: 3px solid #4C2896;
+    width: 40%;
+    align-items: center;
+    text-align: center;
+    padding: 10px;
+    margin: 0 auto;
+}
+
+#edit-link {
+    float: right;
+    margin-right: 10px;
+}
+
+#delete-link {
+    float: right;
+}
+
+#car-form {
+    padding: 10px;
+    margin: 10px;
+}
+
+#main-content {
+    flex-direction: column;
+    align-items: center;
+}
+
+#add-car {
+    border: 3px solid #4C2896;
+    background: #DAC8FF;
+    padding: 30px;
+}
+
+#car-list {
+    width: 100%; /* Optionally set a maximum width */
+}
+
+.car {
+    padding: 10px;
+    margin: 10px;
+    background: #DAC8FF;
+    border: 3px solid #4C2896;
+}
+
+.pad-this {
+    padding: 20px;
+}
+
+/* Form */
+label {
+    display: block;
+}
+
+#features-p input {
+    margin-top: 5px;
+}
+
+#add-feature {
+    color: #4C2896;
+    font-size: 0.75em;
+    text-align: right;
+}
+
+.inline {
+    display: inline;
+}
+
+/* The Close Button */
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    padding: 0px 5px;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Typography */
+a {
+    text-decoration: none;
+    color:black;
+}
+
+#main-nav-items {
+    font-size: 1.2em;
+}
+
+.hidden {
+    display: none;
+}
+
+.transparent {
+    opacity: 0;
+}
+
+/* Larger Resolutions */
+@media (min-width: 600px) {
+    #add-car {
+        max-width: 30%;
+        margin: auto;
+    }
+
+    .flex-container {
+        display: flex;
+    }
+
+    .wrap {
+        flex-wrap: wrap;
+    }
+
+    .car {
+        width: 25%;
+    }
+}
