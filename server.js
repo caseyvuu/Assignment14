@@ -110,7 +110,6 @@ app.get("/api/cars", (req, res) => {
 });
 
 app.post("/api/cars", upload.single("img"), (req, res) => {
-
     const result = validateCar(req.body);
 
     if (result.error) {
@@ -137,11 +136,11 @@ app.post("/api/cars", upload.single("img"), (req, res) => {
 const validateCar = (car) => {
     const schema = Joi.object({
         _id: Joi.optional(),
-        name: Joi.string().min(4).required(),
-        engine: Joi.string().min(2).required(),
-        horsepower: Joi.string().min(2).required(),
-        price: Joi.min(5).required(),
-        mpg: Joi.min(1).required(),
+        name: Joi.string().min(1).required(),
+        engine: Joi.string().required(),
+        horsepower: Joi.string().required(),
+        price: Joi.required(),
+        mpg: Joi.required(),
         features: Joi.allow(""),
     });
 
