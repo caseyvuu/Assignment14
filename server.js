@@ -106,11 +106,12 @@ let cars = [{
 ];
 
 app.get("/api/cars", (req, res) => {
+    console.log("2")
     res.send(cars);
 });
 
 app.post("/api/cars", upload.single("img"), (req, res) => {
-
+    console.log("1")
     const result = validateCar(req.body);
 
     if (result.error) {
@@ -135,6 +136,7 @@ app.post("/api/cars", upload.single("img"), (req, res) => {
 });
 
 const validateCar = (car) => {
+    console.log("3")
     const schema = Joi.object({
         _id: Joi.optional(),
         name: Joi.string().min(3).required(),
