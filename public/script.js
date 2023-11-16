@@ -90,12 +90,57 @@ const displayDetails = (car) => {
         document.getElementById("add-edit").innerHTML = "Edit Car Details";
     };
 
+    dLink.onclick = (e) => {
+        e.preventDefault();
+        deleteCar(car);
+    }
+
     populateEditForm(car);
 };
 
-const populateEditForm = (car) => {};
+const deleteCar = async(car) => {
+    let response = await fetch(`/api/cars/${form._id.value}`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "`application/json;charset=utf-8"
+        }
+    });
 
-const addCar = async(e) => {
+    if(response.status != 200){
+        console.log("Error Deleting!");
+        return;
+    }
+
+    let result = await response.json();
+    showCars();
+    document.getElementById("car-details").innerHTML = "";
+    resetForm();
+}
+
+const populateEditForm = (car) => {
+    const form = document.getElementById("car-form");
+    form._id.value = car._id;
+    form.name.value = car.name;
+    form.engine.value = car.engine;
+    form.horsepower.value = car.horsepower;
+    form.price.value = car.price;
+    form.mpg.value = car.mpg;
+
+    populateFeature(car);
+};
+
+const populateFeature = (car) => {
+    const section = document.getElementById("feature-boxes");
+    
+    car.features.forEach((feature) => {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = feature;
+        section.append(input);
+    })
+};
+
+const addEditCar = async(e) => {
     e.preventDefault();
     const form = document.getElementById("car-form");
     const formData = new FormData(form);
@@ -117,6 +162,27 @@ const addCar = async(e) => {
         setTimeout(() => {
             dataStatus.classList.add("hidden");
         }, 3000);
+    } else { //edit existing recipe
+        console.log(...formData);
+
+        response = await fetch(`/api/cars/${form._id.value}`, {
+            method: "PUT",
+            body: formData
+        });
+
+        if(response.status != 200){
+            console.log("Error Posting Data!");
+        }
+
+        car = await response.json();
+
+        if(form._id.value != -1){
+            displayDetails(car);
+        }
+
+        resetForm();
+        document.querySelector(".dialog").classList.add("transparent");
+        showCars();
     }
 
     if (response.status != 200) {
@@ -169,7 +235,7 @@ const addFeature = (e) => {
 
 window.onload = () => {
     showCars();
-    document.getElementById("car-form").onsubmit = addCar;
+    document.getElementById("car-form").onsubmit = addEditCar;
     document.getElementById("add-link").onclick = showHideAdd;
 
     document.querySelector(".close").onclick = () => {

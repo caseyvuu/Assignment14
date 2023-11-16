@@ -127,11 +127,56 @@ app.post("/api/cars", upload.single("img"), (req, res) => {
         features: req.body.features.split(",")
     }
 
-    console.log(car);
+    if(req.file){
+        car.img = "images/" +req.file.filename;
+    }
 
     cars.push(car);
     res.send(cars);
 });
+
+app.put("/api/cars/:id", upload.single("img"), (req, res) => {
+    const id = parseInt(req.params.id);
+
+    const car = cars.find((r) => r._id === id);;
+
+    const result = validateCar(req.body);
+
+    if (result.error) {
+        res.status(400).send(result.error.details[0].message);
+        return;
+    }
+
+    car.name = req.body.name;
+    car.engine = req.body.engine;
+    car.horsepower = req.body.horsepower;
+    car.price = req.body.price;
+    car.mpg = req.body.mpq;
+    car.features = req.body.features.split(",");
+
+    if (req.file) {
+        car.img = "images/" + req.file.filename;
+    }
+
+    res.send(car);
+});
+
+app.delete("/api/cars/:id", upload.single("img"), (req, res) => {
+    const id = parseInt(req.params.id);
+
+    const car = cars.find((r) => r._id === id);
+
+    if (!car) {
+        res.status(404).send("The car was not found.");
+        return;
+    }
+
+    const index = cars.indexOf(car);
+    cars.splice(index, 1);
+    res.send(car);
+
+});
+
 
 const validateCar = (car) => {
     const schema = Joi.object({
