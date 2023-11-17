@@ -88,6 +88,7 @@ const displayDetails = (car) => {
         e.preventDefault();
         document.querySelector(".dialog").classList.remove("transparent");
         document.getElementById("add-edit").innerHTML = "Edit Car Details";
+        populateEditForm(car);
     };
 
     dLink.onclick = (e) => {
@@ -95,10 +96,11 @@ const displayDetails = (car) => {
         deleteCar(car);
     }
 
-    populateEditForm(car);
+    
 };
 
 const deleteCar = async(car) => {
+    const form = document.getElementById("car-form");
     let response = await fetch(`/api/cars/${form._id.value}`, {
         method: "DELETE",
         headers: {
@@ -146,10 +148,12 @@ const addEditCar = async(e) => {
     const formData = new FormData(form);
     const dataStatus = document.getElementById("data-status");
     let response;
-    
+
+    formData.append("features", getFeatures());
+
     if (form._id.value == -1) {
         formData.delete("_id");
-        formData.append("features", getFeatures());
+        
 
         console.log(...formData);
 
@@ -162,7 +166,8 @@ const addEditCar = async(e) => {
         setTimeout(() => {
             dataStatus.classList.add("hidden");
         }, 3000);
-    } else { //edit existing recipe
+    } else {
+        
         console.log(...formData);
 
         response = await fetch(`/api/cars/${form._id.value}`, {

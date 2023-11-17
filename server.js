@@ -158,7 +158,7 @@ app.put("/api/cars/:id", upload.single("img"), (req, res) => {
         car.img = "images/" + req.file.filename;
     }
 
-    res.send(car);
+    res.status(200).send(car);
 });
 
 app.delete("/api/cars/:id", upload.single("img"), (req, res) => {
@@ -192,6 +192,6 @@ const validateCar = (car) => {
     return schema.validate(car);
 };
 
-app.listen(3004, () => {
+app.listen(3002, () => {
     console.log("I'm listening");
 });
