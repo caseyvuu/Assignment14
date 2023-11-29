@@ -6,108 +6,54 @@ app.use(express.static("public"));
 app.use(express.json());
 const cors = require("cors");
 app.use(cors());
+const mongoose = require("mongoose");
 
 const upload = multer({ dest: __dirname + "/public/images" });
+
+mongoose
+    .connect("mongodb+srv://cv10:Mongoose123@cluster0.yeez4jc.mongodb.net/")
+    .then(() => {
+    console.log("connected to mongodb");
+    })
+    .catch((error) => console.log("couldn't connect to mongodb", error));
+
+    app.get("/", (req, res) => {
+    res.sendFile(__dirname + "/index.html");
+});
+
+const carSchema = new mongoose.Schema({
+    name: String,
+    engine: String,
+    horsepower: String,
+    price: String,
+    mpg: String,
+    img: String,
+    features: [String],
+});
+
+const Car = mongoose.model("Car", carSchema);
 
 app.get("/", (req, res) => {
     res.sendFile(__dirname + "/index.html");
 });
 
-let cars = [{
-    _id: 1,
-    name: "BMW i8",
-    price: "$147,500",
-    engine: "turbocharged 1.5-liter three-cylinder gas engine",
-    horsepower: "369 horsepower",
-    mpg: "27",
-    features: [
-        "All Wheel Drive",
-        "Heated Mirrors",
-        "Intelligent Parking System",
-        "Knee Airbags",
-        "Leather Seat Trim",
-    ]
-},
-{
-    _id: 2,
-    name: "Rolls-Royce Phantom",
-    price: "$493,000",
-    engine: "6.7 L V12",
-    horsepower: "563 horsepower",
-    mpg: "14",
-    features: [
-        "4-Corner Auto-Leveling Suspension",
-        "Multiple Refrigerator Boxes",
-        "Starlight Headliner",
-        "Powered Footrests",
-        "Privacy Suite",
-    ]
-},
-{
-    _id: 3,
-    name: "Porsche 911",
-    price: "$114,400",
-    engine: "twin-turbo 3.0-liter flat-six-cylinder",
-    horsepower: "640 horsepower",
-    mpg: "18",
-    features: [
-        "Multifunction Steering Wheel",
-        "PASM Sport Suspension",
-        "Electric Sport Seats",
-        "Door Puddle Lights",
-        "Navigation Plus",
-    ]
-},
-{
-    _id: 4,
-    name: "Quattroporte",
-    price: "$139,000",
-    engine: "3.8-liter V-8",
-    horsepower: "424 horsepower",
-    mpg: "19",
-    features: [
-        "Skyhook Suspensions",
-        "Advanced Driver Assistance System",
-        "Six Dual-Stage Airbags",
-        "Wireless Charging Pad",
-        "Adaptive Cruise Control",
-    ]
-},
-{
-    _id: 5,
-    name: "Pagani Huayra",
-    price: "$3,000,000",
-    engine: "6.0 L (5,980 cc) twin-turbocharged M158 60° V12",
-    horsepower: "791 horsepower",
-    mpg: "10",
-    features: [
-        "Removable Carbon-Fiber Roof",
-        "Bulletproof",
-        "7-Speed Automated Manual",
-        "Pirelli Tyres",
-        "21-inch Rear Rims",
-    ]
-},
-{
-    _id: 6,
-    name: "Audi R8",
-    price: "$158,600",
-    engine: "5.2 L V10 FSI",
-    horsepower: "602 horsepower",
-    mpg: "17",
-    features: [
-        "Racing Shell Seats",
-        "Virtual Cockpit",
-        "Carbon Fiber Engine Compartment",
-        "Titanium Finish",
-        "Ceramic Brakes",
-    ]
-},
-];
-
 app.get("/api/cars", (req, res) => {
-    res.send(cars);
+    getCars(res);
 });
+
+const getCars = async (res) => {
+    const cars = await Car.find();
+    res.send(cars);
+};
+
+app.get("/api/cars/:id", (req, res) => {
+    getCar(res, req.params.id);
+});
+
+const getCar = async(res, id) => {
+    const car = await Car.findOne({_id:id});
+    res.send(car);
+};
 
 app.post("/api/cars", upload.single("img"), (req, res) => {
     const result = validateCar(req.body);
@@ -117,66 +63,67 @@ app.post("/api/cars", upload.single("img"), (req, res) => {
         return;
     }
 
-    const car = {
-        _id: cars.length + 1,
+    const car = new Car({
         name: req.body.name,
         engine: req.body.engine,
         horsepower: req.body.horsepower,
         price: req.body.price,
-        mpg: req.body.mpg,
-        features: req.body.features.split(",")
-    }
+        mpg: req.body.mpq,
+        features: req.body.features.split(","),
+    })
 
     if(req.file){
-        car.img = "images/" +req.file.filename;
+        car.img = "images/" + req.file.filename;
     }
 
-    cars.push(car);
-    res.send(cars);
+    createCar(res, car);
 });
 
+const createCar = async (res, car) => {
+    const result = await car.save();
+    res.send(car);
+};
+
 app.put("/api/cars/:id", upload.single("img"), (req, res) => {
-    const id = parseInt(req.params.id);
-
-    const car = cars.find((r) => r._id === id);;
-
     const result = validateCar(req.body);
-
-    if (result.error) {
+    console.log(result);
+    if(result.error) {
         res.status(400).send(result.error.details[0].message);
         return;
     }
 
-    car.name = req.body.name;
-    car.engine = req.body.engine;
-    car.horsepower = req.body.horsepower;
-    car.price = req.body.price;
-    car.mpg = req.body.mpq;
-    car.features = req.body.features.split(",");
+    updateCar(req, res);
+});
 
-    if (req.file) {
-        car.img = "images/" + req.file.filename;
+const updateCar = async (req, res) => {
+    let fieldsToUpdate = {
+        name: req.body.name,
+        engine: req.body.engine,
+        horsepower: req.body.horsepower,
+        price: req.body.price,
+        mpg: req.body.mpq,
+        features: req.body.features.split(","),
+    }
+    console.log("im here");
+    if(req.file){
+        console.log(req.file.filename);
+        fieldsToUpdate.img = "images/" + req.file.filename;
     }
 
-    res.status(200).send(car);
-});
+    const result = await Car.updateOne({_id:req.params.id}, fieldsToUpdate);
+    const car = await Car.findById(req.params.id);
+
+    res.send(car);
+};
 
 app.delete("/api/cars/:id", upload.single("img"), (req, res) => {
-    const id = parseInt(req.params.id);
-
-    const car = cars.find((r) => r._id === id);
-
-    if (!car) {
-        res.status(404).send("The car was not found.");
-        return;
-    }
-
-    const index = cars.indexOf(car);
-    cars.splice(index, 1);
-    res.send(car);
-
+    removeCars(res, req.params.id);
 });
 
+const removeCars = async(res, id) => {
+    const car = await Car.findByIdAndDelete(id);
+    res.send(car);
+};
 
 const validateCar = (car) => {
     const schema = Joi.object({
@@ -186,12 +133,13 @@ const validateCar = (car) => {
         horsepower: Joi.string().required(),
         price: Joi.required(),
         mpg: Joi.required(),
+        img: Joi.allow(""),
         features: Joi.allow(""),
     });
 
     return schema.validate(car);
 };
 
-app.listen(3002, () => {
+app.listen(3000, () => {
     console.log("I'm listening");
 });

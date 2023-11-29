@@ -78,6 +78,11 @@ h3 {
     padding: 20px;
 }
 
+img {
+    width: 20%;
+    height: 20%;
+}
+
 /* Form */
 label {
     display: block;

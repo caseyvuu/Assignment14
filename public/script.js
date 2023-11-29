@@ -78,11 +78,17 @@ const displayDetails = (car) => {
     carDetails.append(ul);
     ul.classList.add("pad-this");
     console.log(car.features);
-    car.features.forEach((feature) => {
-        const li = document.createElement("li");
-        ul.append(li);
-        li.innerHTML = feature;
-    });
+    if(car.features.length > 0) {
+        car.features.forEach((feature) => {
+            const li = document.createElement("li");
+            ul.append(li);
+            li.innerHTML = feature;
+        });
+    }
+
+    const img = document.createElement("img");
+    carDetails.append(img);
+    img.src = car.img;
 
     eLink.onclick = (e) => {
         e.preventDefault();
@@ -101,7 +107,7 @@ const displayDetails = (car) => {
 
 const deleteCar = async(car) => {
     const form = document.getElementById("car-form");
-    let response = await fetch(`/api/cars/${form._id.value}`, {
+    let response = await fetch(`/api/cars/${car._id}`, {
         method: "DELETE",
         headers: {
             "Content-Type": "`application/json;charset=utf-8"
@@ -117,7 +123,7 @@ const deleteCar = async(car) => {
     showCars();
     document.getElementById("car-details").innerHTML = "";
     resetForm();
-}
+};
 
 const populateEditForm = (car) => {
     const form = document.getElementById("car-form");
