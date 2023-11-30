@@ -101,10 +101,10 @@ const updateCar = async (req, res) => {
         engine: req.body.engine,
         horsepower: req.body.horsepower,
         price: req.body.price,
-        mpg: req.body.mpq,
+        mpg: req.body.mpg,
         features: req.body.features.split(","),
     }
-    console.log("im here");
+    
     if(req.file){
         console.log(req.file.filename);
         fieldsToUpdate.img = "images/" + req.file.filename;
